@@ -5,13 +5,12 @@ import { getData } from "../api";
 const StateContext = createContext();
 
 const StateContextProvider = ({ children }) => {
-
-    const [search, setSearch] = useState("");
-    const [productList, setProductList] = useState([]);
+  const [search, setSearch] = useState("");
+  const [productList, setProductList] = useState([]);
 
   const initialState = {
     products: [],
-    cart: []
+    cart: [],
   };
 
   const reducer = (state, action) => {
@@ -19,9 +18,28 @@ const StateContextProvider = ({ children }) => {
       case "GET_PRODUCTS":
         return { ...state, products: action.payload };
       case "ADD_TO_CART":
-        return {...state, cart: [...state.cart, {...action.payload, qty:1}] };
+        const item = action.payload;
+        const isExisted = state.cart.find((c) => c.id === item.id);
+        if (isExisted) {
+          return {
+            ...state,
+            cart: state.cart.map((c) =>
+              c.id === item.id ? { ...item } : { ...c }
+            ),
+          };
+        } else {
+          return {
+            ...state,
+            cart: [...state.cart, { ...item }],
+          };
+        }
       case "REMOVE_FROM_CART":
-        return {...state, cart: state.cart.filter((item) => item.id !== action.payload.id) };
+        return {
+          ...state,
+          cart: state.cart.filter((item) => item.id !== action.payload.id),
+        };
+      case "CART_EMPTY":
+        return {...state, cart: (state.cart = [])}
       default:
         return state;
     }
@@ -34,18 +52,19 @@ const StateContextProvider = ({ children }) => {
     setProductList(data);
   };
 
-  
   useEffect(() => {
     getProducts();
   }, []);
-  
-  useEffect(()=> {
-    dispatch({ type: "GET_PRODUCTS", payload: productList });
-    const filterProduct = productList.filter((product) => product.title.toLowerCase().includes(search.toLowerCase()))
-    dispatch({ type: "GET_PRODUCTS", payload: filterProduct });
-  },[productList, search])
 
-  const data = {state, search, setSearch, dispatch};
+  useEffect(() => {
+    dispatch({ type: "GET_PRODUCTS", payload: productList });
+    const filterProduct = productList.filter((product) =>
+      product.title.toLowerCase().includes(search.toLowerCase())
+    );
+    dispatch({ type: "GET_PRODUCTS", payload: filterProduct });
+  }, [productList, search]);
+
+  const data = { state, search, setSearch, dispatch };
 
   return <StateContext.Provider value={data}>{children}</StateContext.Provider>;
 };
