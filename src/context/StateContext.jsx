@@ -38,8 +38,42 @@ const StateContextProvider = ({ children }) => {
           ...state,
           cart: state.cart.filter((item) => item.id !== action.payload.id),
         };
+      case "DECREASE_ITEM":
+        const decreasedItem = action.payload;
+        const existingCartItem = state.cart.find(
+          (item) => item.id === decreasedItem.id
+        );
+
+        if (existingCartItem.quantity > 1) {
+          const updatedCart = state.cart.map((item) =>
+            item.id === decreasedItem.id
+              ? { ...item, quantity: item.quantity - 1 }
+              : item
+          );
+
+          return {
+            ...state,
+            cart: updatedCart,
+          };
+        } else {
+          return state;
+        }
+
+      case "INCREASE_ITEM":
+        const increasedItem = action.payload;
+        const updatedCart = state.cart.map((item) =>
+          item.id === increasedItem.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+
+        return {
+          ...state,
+          cart: updatedCart,
+        };
+
       case "CART_EMPTY":
-        return {...state, cart: (state.cart = [])}
+        return { ...state, cart: (state.cart = []) };
       default:
         return state;
     }
