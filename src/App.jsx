@@ -5,7 +5,6 @@ import Navbar from "./components/Navbar";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
 import Success from "./pages/Success";
-import 'animate.css';
 
 const App = () => {
   return (

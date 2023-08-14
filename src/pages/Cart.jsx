@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useStateContext } from "../context/StateContext";
-import { AiFillDelete } from "react-icons/ai";
 import { useState, useEffect } from "react";
+import CartItem from "../components/CartItem";
 
 const Cart = () => {
   const {
@@ -9,7 +9,6 @@ const Cart = () => {
     dispatch,
   } = useStateContext();
   const [total, setTotal] = useState(0);
-  const [qty, setQty] = useState(1);
 
   const navigate = useNavigate();
 
@@ -18,65 +17,39 @@ const Cart = () => {
     navigate("/success");
   };
 
+  const increasePrice = (price) => {
+    setTotal((total) + price);
+  };
+
+  const decreasePrice = (price) => {
+    setTotal((total) - price);
+  };
+
   useEffect(() => {
     setTotal(cart.reduce((acc, item) => acc + item.price, 0));
   }, []);
-
-  const handleDecrease = (item) => {
-    dispatch({ type: "DECREASE_ITEM", payload: item });
-  };
-
-  const handleIncrease = (item) => {
-    dispatch({ type: "INCREASE_ITEM", payload: item });
-  };
 
   return (
     <>
       {" "}
       {cart.length > 0 ? (
         <div className="grid grid-cols-4">
-          <div className="col-span-2 flex flex-col gap-5">
+          <div className="col-span-3 flex flex-col gap-5">
             {cart?.map((item) => (
-              <div key={item.id} className="flex items-center gap-4">
-                <img
-                  src={item?.image}
-                  className="h-32 border-2 rounded p-4"
-                  alt=""
-                />
-                <div className="">
-                  <h1>{item?.title}</h1>
-                  <p>${item?.price}</p>
-                  <p>{qty}</p>
-                  <div className="flex">
-                    <button
-                      onClick={() => handleDecrease(item)}
-                      className="text-white bg-secondary px-4 py-1 rounded transition transform hover:scale-105"
-                    >
-                      -
-                    </button>
-                    <button
-                      onClick={() => handleIncrease(item)}
-                      className="text-white bg-secondary px-4 py-1 rounded transition transform hover:scale-105 mx-2"
-                    >
-                      +
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        dispatch({ type: "REMOVE_FROM_CART", payload: item })
-                      }
-                    >
-                      <AiFillDelete className="text-danger text-2xl" />
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <CartItem
+                key={item.id}
+                item={item}
+                increasePrice={increasePrice}
+                decreasePrice={decreasePrice}
+                total={total}
+                setTotal={setTotal}
+              />
             ))}
           </div>
-          <div className="col-span-2">
+          <div className="col-span-1">
             <div className="bg-gray-50 p-10 rounded shadow-lg">
               <h1 className="text-3xl text-info font-semibold">
-                Total Price - ${total}
+                Total Price - ${total.toFixed(2)}
               </h1>
 
               <button

@@ -7,8 +7,9 @@ const Navbar = () => {
   const {
     search,
     setSearch,
-    state: { cart },
+    state: { cart, totalQty },
   } = useStateContext();
+
   return (
     <nav className="flex justify-between items-center px-5 py-2 my-5 rounded bg-gray-50 shadow-md">
       <Link to={"/"}>
@@ -23,7 +24,7 @@ const Navbar = () => {
         <Link to="/cart">
           <div className="flex items-center gap-2 bg-header text-white px-4 py-2 rounded">
             <FaShoppingCart className="text-xl" />
-            <small className="text-xs text-white">{cart.length}</small>
+            <small className="text-xs text-white">{totalQty}</small>
           </div>
         </Link>
         <div className="flex gap-2 items-center border-2 rounded px-3 py-2">

@@ -11,6 +11,7 @@ const StateContextProvider = ({ children }) => {
   const initialState = {
     products: [],
     cart: [],
+    totalQty: 0,
   };
 
   const reducer = (state, action) => {
@@ -21,59 +22,40 @@ const StateContextProvider = ({ children }) => {
         const item = action.payload;
         const isExisted = state.cart.find((c) => c.id === item.id);
         if (isExisted) {
-          return {
-            ...state,
-            cart: state.cart.map((c) =>
-              c.id === item.id ? { ...item } : { ...c }
-            ),
-          };
+          return state;
+          // ...state,
+          // cart: state.cart.map((c) =>
+          //   c.id === item.id ? { ...item } : { ...c }
+          // ),
         } else {
           return {
             ...state,
             cart: [...state.cart, { ...item }],
+            totalQty: state.totalQty + 1,
           };
         }
+      case "INCREASE_QTY":
+        return {
+          ...state,
+          totalQty: state.totalQty + 1,
+        };
+      case "DECREASE_QTY":
+        return {
+          ...state,
+          totalQty: state.totalQty - 1,
+        };
+        case "DECREASE_QTY_PAYLOAD":
+          return {
+            ...state,
+            totalQty: state.totalQty - action.payload,
+          };
       case "REMOVE_FROM_CART":
         return {
           ...state,
-          cart: state.cart.filter((item) => item.id !== action.payload.id),
+          cart: state.cart.filter((item) => item.id !== action.payload.id)
         };
-      case "DECREASE_ITEM":
-        const decreasedItem = action.payload;
-        const existingCartItem = state.cart.find(
-          (item) => item.id === decreasedItem.id
-        );
-
-        if (existingCartItem.quantity > 1) {
-          const updatedCart = state.cart.map((item) =>
-            item.id === decreasedItem.id
-              ? { ...item, quantity: item.quantity - 1 }
-              : item
-          );
-
-          return {
-            ...state,
-            cart: updatedCart,
-          };
-        } else {
-          return state;
-        }
-
-      case "INCREASE_ITEM":
-        const increasedItem = action.payload;
-        const updatedCart = state.cart.map((item) =>
-          item.id === increasedItem.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-
-        return {
-          ...state,
-          cart: updatedCart,
-        };
-
       case "CART_EMPTY":
-        return { ...state, cart: (state.cart = []) };
+        return { ...state, cart: (state.cart = []), totalQty: 0 };
       default:
         return state;
     }
