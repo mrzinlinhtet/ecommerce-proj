@@ -16,7 +16,7 @@ const Navbar = () => {
         <div className="flex items-center gap-2 cursor-pointer">
           <SiShopify className="text-4xl text-danger" />
           <h1 className="uppercase text-2xl tracking-wider font-semibold text-header">
-            gamani-shop
+            gamani-store
           </h1>
         </div>
       </Link>
